@@ -1,0 +1,20 @@
+{
+  "author": "jerome creignou <jerome.creignou@gmail.com>",
+  "name": "tyrion-elevator",
+  "description": "code-story elevator contexst",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jcreigno/tyrion-elevator.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "vows --test"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
