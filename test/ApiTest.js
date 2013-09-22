@@ -39,7 +39,11 @@ module.exports = function (url) {
         },
         assertBody : function (str) {
             return function (err, res, body) {
-                assert.equal(body, str);
+                if (str.exec) {
+                    assert.ok(str.exec(body));
+                } else {
+                    assert.equal(body, str);
+                }
             };
         }
     };
