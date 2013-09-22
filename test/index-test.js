@@ -8,12 +8,42 @@ var vows = require('vows'),
 
 var server = require('../src/index');
 
-vows.describe('Le serveur "Tyrion Elevator"').addBatch({
-    'doit être démarré': {
-        topic: function () {
-            apiTest.get(this.callback);
+var events = ['/call?atFloor=[0-5]&to=[UP|DOWN]',
+              '/go?floorToGo=[0-5]',
+              '/userHasEntered',
+              '/userHasExited',
+              '/reset?cause=information+message'];
+
+function addEvents(batch) {
+    events.forEach(function (e) {
+        batch['doit répondre à l évènement "' + e + '"'] = {
+            topic: function () {
+                apiTest.get(e, this.callback);
+            },
+            'avec un status code 200': apiTest.assertStatus(200)
+        };
+    });
+    return batch;
+}
+
+function createBatch() {
+    var result = {
+        'doit être démarré': {
+            topic: function () {
+                apiTest.get(this.callback);
+            },
+            'et répondre un code 200': apiTest.assertStatus(200),
+            'et repond "NOTHING"': apiTest.assertBody('NOTHING')
         },
-        'et répondre un code 200': apiTest.assertStatus(200),
-        'et repond "NOTHING"': apiTest.assertBody('NOTHING')
-    }
-}).export(module);
+        'doit répondre à "nextCommand"' : {
+            topic: function () {
+                apiTest.get('/nextCommand', this.callback);
+            },
+            'et répondre un code 200': apiTest.assertStatus(200),
+            'et repond "NOTHING"': apiTest.assertBody('NOTHING')
+        }
+    };
+    return addEvents(result);
+}
+
+vows.describe('Le serveur "Tyrion Elevator"').addBatch(createBatch()).export(module);
