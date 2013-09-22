@@ -40,7 +40,7 @@ function createBatch() {
                 apiTest.get('/nextCommand', this.callback);
             },
             'et répondre un code 200': apiTest.assertStatus(200),
-            'et repond "NOTHING"': apiTest.assertBody('NOTHING')
+            'et repond une commande parmi "NOTHING, UP, DOWN, OPEN, CLOSE"': apiTest.assertBody(/NOTHING|UP|DOWN|OPEN|CLOSE/)
         }
     };
     return addEvents(result);
