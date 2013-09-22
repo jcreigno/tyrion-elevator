@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - 0.8
+
+env:
+  global:
+    - secure: "EQyBrCopaG18FRKBQq5hAt8MFlqHH4jw7JRcc0gCZsFsa3YSsNhnCFoiwvFE\n+Hln5pU0B3/qqYZDjoLKOaYr7yR8gCScOhM0ysZu7pWiv3cLeUA4+7wI8Q/C\n6xtChaD6nHA/1nShA8gr2tYlFQZLACqTYNdE2+oMDcM4sWoqZY8="
+
+after_success:
+  # Install the Heroku gem (or the Heroku toolbelt)
+  - gem install heroku
+  # Add your Heroku git repo:
+  - git remote add heroku git@heroku.com:tyrion-elevator.git
+  # Turn off warnings about SSH keys:
+  - echo "Host heroku.com" >> ~/.ssh/config
+  - echo "   StrictHostKeyChecking no" >> ~/.ssh/config
+  - echo "   CheckHostIP no" >> ~/.ssh/config
+  - echo "   UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+  # Clear your current Heroku SSH keys:
+  - heroku keys:clear
+  # Add a new SSH key to Heroku
+  - yes | heroku keys:add
+  # Push to Heroku!
+  - yes | git push heroku master
