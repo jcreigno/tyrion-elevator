@@ -29,13 +29,13 @@ QueuedElevator.prototype.updateQueue = function (nb) {
 };
 
 QueuedElevator.prototype.nextCommand = function () {
-    var next = this.updateQueue().shift() || 'NOTHING';
+    var next = this.updateQueue().shift();
     if (next === 'UP') {
         this.currentFloor++;
     } else if (next === 'DOWN') {
         this.currentFloor--;
     }
-    return next;
+    return next || 'NOTHING';
 };
 
 QueuedElevator.prototype.call = function (atFloor, to) {

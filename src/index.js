@@ -13,6 +13,7 @@ var commands = {
     'go' : function (query) {
         return elevator.go(query.floorToGo);
     },
+    'nextCommand': elevator.nextCommand.bind(elevator),
     'userHasEntered': elevator.userHasEntered.bind(elevator),
     'userHasExited': elevator.userHasExited.bind(elevator),
     'reset': function (query) {
