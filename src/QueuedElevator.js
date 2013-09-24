@@ -39,6 +39,7 @@ QueuedElevator.prototype.nextCommand = function () {
     } else if (next === 'DOWN') {
         this.currentFloor--;
     }
+    console.log('next command is %s', next);
     return next || 'NOTHING';
 };
 
