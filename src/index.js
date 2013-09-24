@@ -26,7 +26,8 @@ function commands(el) {
 var users = {};
 
 var server = http.createServer(function (req, res) {
-    var client = req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
+    var client = req.headers['x-forwarded-for'].split(',')[0]
+        || req.connection.remoteAddress;
     if (!users[client]) {
         console.log('new elevator for "%s".', client);
         users[client] = commands(elevator(5));
