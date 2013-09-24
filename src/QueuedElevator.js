@@ -13,7 +13,7 @@ function QueuedElevator(size) {
 function moveTo(nb) {
     console.log('move to %d',nb);
     if (nb === 0) {
-        return;
+        return [];
     }
     return _.times(Math.abs(nb), function () {
         return (nb < 0) ? 'DOWN' : 'UP';
