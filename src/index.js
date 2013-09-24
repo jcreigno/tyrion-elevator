@@ -28,7 +28,7 @@ var users = {};
 var server = http.createServer(function (req, res) {
     var client = req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
     if (!users[client]) {
-        console.log('new elevator for %s.', client);
+        console.log('new elevator for "%s".', client);
         users[client] = commands(elevator(5));
     }
     var ctrl = users[client];

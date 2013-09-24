@@ -20,10 +20,14 @@ function moveTo(nb) {
     });
 }
 
-QueuedElevator.prototype.updateQueue = function (nb) {
+QueuedElevator.prototype.updateQueue = function () {
     if (this.queue.length === 0) {
-        var move = +this.orders.shift() - (+this.currentFloor) | 0;
-        this.queue = [].concat(moveTo(move), ['OPEN', 'CLOSE']);
+        if (this.orders.length === 0) {
+            this.queue = ['NOTHING'];
+        } else {
+            var move = this.orders.shift() - this.currentFloor;
+            this.queue = [].concat(moveTo(move), ['OPEN', 'CLOSE']);
+        }
     }
     return this.queue;
 };
@@ -40,12 +44,12 @@ QueuedElevator.prototype.nextCommand = function () {
 
 QueuedElevator.prototype.call = function (atFloor, to) {
     console.log('call at floor %d to %s', atFloor, to);
-    this.orders.push(atFloor);
+    this.orders.push(+atFloor);
 };
 
 QueuedElevator.prototype.go = function (floorToGo) {
     console.log('go to floor %d', floorToGo);
-    this.orders.push(floorToGo);
+    this.orders.push(+floorToGo);
 };
 
 QueuedElevator.prototype.userHasEntered = function () {
