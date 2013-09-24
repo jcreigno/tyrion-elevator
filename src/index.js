@@ -3,30 +3,40 @@
 
 var http = require('http'), url = require('url');
 
-var elevator = require('./QueuedElevator')(5);
+var elevator = require('./QueuedElevator');
 
 
-var commands = {
-    'call' : function (query) {
-        return elevator.call(query.atFloor, query.to);
-    },
-    'go' : function (query) {
-        return elevator.go(query.floorToGo);
-    },
-    'nextCommand': elevator.nextCommand.bind(elevator),
-    'userHasEntered': elevator.userHasEntered.bind(elevator),
-    'userHasExited': elevator.userHasExited.bind(elevator),
-    'reset': function (query) {
-        return elevator.reset(query.cause);
-    }
-};
+function commands(el) {
+    return {
+        'call' : function (query) {
+            return el.call(query.atFloor, query.to);
+        },
+        'go' : function (query) {
+            return el.go(query.floorToGo);
+        },
+        'nextCommand': el.nextCommand.bind(el),
+        'userHasEntered': el.userHasEntered.bind(el),
+        'userHasExited': el.userHasExited.bind(el),
+        'reset': function (query) {
+            return el.reset(query.cause);
+        }
+    };
+}
+
+var users = {};
 
 var server = http.createServer(function (req, res) {
+    var client = req.headers['X-Forwarded-For'] || req.connection.remoteAddress;
+    if (!users[client]) {
+        console.log('new elevator for %s.', client);
+        users[client] = commands(elevator(5));
+    }
+    var ctrl = users[client];
     var u = url.parse(req.url, true);
     var cmd = u.pathname.substring(1);
     res.writeHead(200);
-    if (commands[cmd]) {
-        res.write(commands[cmd](u.query) || '');
+    if (ctrl[cmd]) {
+        res.write(ctrl[cmd](u.query) || '');
     } else {
         res.write('NOTHING');
     }
