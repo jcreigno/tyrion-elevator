@@ -36,6 +36,7 @@ Omnibus.prototype.userHasExited = function () {
 
 Omnibus.prototype.reset = function (cause) {
     console.log('reset : %s', cause);
+    this.current = 0;
 };
 
 module.exports = function (size) {

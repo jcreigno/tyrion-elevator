@@ -11,7 +11,7 @@ function QueuedElevator(size) {
 }
 
 function moveTo(nb) {
-    console.log('move to %d',nb);
+    console.log('move %d', nb);
     if (nb === 0) {
         return [];
     }
@@ -60,6 +60,10 @@ QueuedElevator.prototype.userHasExited = function () {
 
 QueuedElevator.prototype.reset = function (cause) {
     console.log('reset : %s', cause);
+    this.orders = [];
+    this.queue = [];
+    this.currentFloor = 0;
+    this.inUsers = 0;
 };
 
 module.exports = function (size) {
