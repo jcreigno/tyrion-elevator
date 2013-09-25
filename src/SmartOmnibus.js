@@ -57,7 +57,7 @@ SmartOmnibus.prototype.nextCommand = function () {
     } else {
         this.current++;
     }
-    console.log('next is %s', next);
+    console.log('current floor is %d going %s', (this.current - 1) % this.size, next);
     return next;
 };
 
