@@ -65,10 +65,7 @@ QueuedElevator.prototype.userHasExited = function () {
 
 QueuedElevator.prototype.reset = function (cause) {
     console.log('reset : %s', cause);
-    this.orders = [];
-    this.queue = [];
-    this.currentFloor = 0;
-    this.inUsers = 0;
+    QueuedElevator.bind(this)();
 };
 
 module.exports = function (size) {
