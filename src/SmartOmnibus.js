@@ -49,13 +49,15 @@ SmartOmnibus.prototype.updateQueue = function () {
 
 SmartOmnibus.prototype.nextCommand = function () {
     var next = this.updateQueue().shift();
-    if (this.requestedAtFloor(next)) {
-        this.queue.unshift(next);
-        this.queue.unshift('CLOSE');
-        this.statusAtfloor().reset(next);
-        next = 'OPEN';
-    } else {
-        this.current++;
+    if (next !== 'CLOSE') {
+        if (this.requestedAtFloor(next)) {
+            this.queue.unshift(next);
+            this.queue.unshift('CLOSE');
+            this.statusAtfloor().reset(next);
+            next = 'OPEN';
+        } else {
+            this.current++;
+        }
     }
     console.log('current floor is %d going %s', (this.current - 1) % this.size, next);
     return next;
