@@ -48,16 +48,16 @@ SmartOmnibus.prototype.updateQueue = function () {
 
 SmartOmnibus.prototype.nextCommand = function () {
     var next = this.updateQueue().shift();
-    console.log('next is %s', next);
     if (this.requestedAtFloor(next)) {
         this.queue.unshift(next);
         this.queue.unshift('CLOSE');
         next = 'OPEN';
+        console.log(JSON.stringify(this.statusAtfloor()));
         this.statusAtfloor().reset();
     } else {
-        console.log('no one asked for this floor %s', JSON.stringify(this.statusAtfloor()));
         this.current++;
     }
+    console.log('next is %s', next);
     return next;
 };
 
