@@ -41,30 +41,35 @@ SmartOmnibus.prototype.requestedAtFloor = function (way) {
 
 SmartOmnibus.prototype.updateQueue = function () {
     if (this.queue.length === 0) {
-        this.queue.push(this.cycle[(this.current++) % this.cycle.length]);
+        this.queue.push(this.cycle[this.current % this.cycle.length]);
     }
     return this.queue;
 };
 
 SmartOmnibus.prototype.nextCommand = function () {
     var next = this.updateQueue().shift();
+    console.log('next is %s', next);
     if (this.requestedAtFloor(next)) {
         this.queue.unshift(next);
         this.queue.unshift('CLOSE');
         next = 'OPEN';
-        this.statusAtfloor.reset();
+        this.statusAtfloor().reset();
+    } else {
+        console.log('no one asked for this floor %s', JSON.stringify(this.statusAtfloor()));
+        this.current++;
     }
     return next;
 };
 
 SmartOmnibus.prototype.call = function (atFloor, to) {
     console.log('call at floor %d to %s', atFloor, to);
-    this.status[atFloor][to]++;
+    this.status[+atFloor].OUT[to]++;
+    console.log(this.status[+atFloor]);
 };
 
 SmartOmnibus.prototype.go = function (floorToGo) {
     console.log('go to floor %d', floorToGo);
-    this.status[floorToGo].IN++;
+    this.status[+floorToGo].IN++;
 };
 
 SmartOmnibus.prototype.userHasEntered = function () {
@@ -79,7 +84,7 @@ SmartOmnibus.prototype.userHasExited = function () {
 
 SmartOmnibus.prototype.reset = function (cause) {
     console.log('reset : %s', cause);
-    SmartOmnibus.bind(this)();
+    SmartOmnibus.bind(this)(this.size);
 };
 
 module.exports = function (size) {
