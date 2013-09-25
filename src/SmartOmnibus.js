@@ -10,8 +10,9 @@ function State() {
     };
 }
 
-State.prototype.reset = function () {
-    State.bind(this)();
+State.prototype.reset = function (way) {
+    this.IN = 0;
+    this.OUT[way] = 0;
 };
 
 function SmartOmnibus(size) {
@@ -51,9 +52,8 @@ SmartOmnibus.prototype.nextCommand = function () {
     if (this.requestedAtFloor(next)) {
         this.queue.unshift(next);
         this.queue.unshift('CLOSE');
+        this.statusAtfloor().reset(next);
         next = 'OPEN';
-        console.log(JSON.stringify(this.statusAtfloor()));
-        this.statusAtfloor().reset();
     } else {
         this.current++;
     }
