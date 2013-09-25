@@ -8,10 +8,10 @@ var Omnibus = require('../src/Omnibus'),
 
 var SIZE = 6;
 
-var upward = _(SIZE).times(function () {
+var upward = _(SIZE - 1).times(function () {
     return ['UP', 'OPEN', 'CLOSE'];
 });
-var downward = _(SIZE).times(function () {
+var downward = _(SIZE - 1).times(function () {
     return ['DOWN', 'OPEN', 'CLOSE'];
 });
 
@@ -38,7 +38,7 @@ function createBatch() {
             topic: new Omnibus(SIZE),
             ' le cycle est de 6x2x3 étapes': function (o) {
                 //console.log(o.cycle);
-                assert.equal(o.cycle.length, SIZE * 2 * 3);
+                assert.equal(o.cycle.length, (SIZE - 1) * 2 * 3);
             },
             ' l\'objet contient les méthodes requises': function (o) {
                 assert.ok(o.nextCommand);
