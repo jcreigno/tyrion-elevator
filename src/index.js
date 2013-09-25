@@ -3,7 +3,7 @@
 
 var http = require('http'), url = require('url');
 
-var elevator = require('./QueuedElevator');
+var elevator = require('./SmartOmnibus');
 
 
 function commands(el) {
@@ -26,8 +26,8 @@ function commands(el) {
 var users = {};
 
 var server = http.createServer(function (req, res) {
-    var client = req.headers['x-forwarded-for'].split(',')[0]
-        || req.connection.remoteAddress;
+    var forwarded = req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'].split(',')[0];
+    var client = forwarded || req.connection.remoteAddress;
     if (!users[client]) {
         console.log('new elevator for "%s".', client);
         users[client] = commands(elevator(5));
