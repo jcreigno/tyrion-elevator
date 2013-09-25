@@ -65,7 +65,7 @@ QueuedElevator.prototype.userHasExited = function () {
 
 QueuedElevator.prototype.reset = function (cause) {
     console.log('reset : %s', cause);
-    QueuedElevator.bind(this)();
+    QueuedElevator.bind(this)(this.size);
 };
 
 module.exports = function (size) {
