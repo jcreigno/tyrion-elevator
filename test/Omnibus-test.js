@@ -6,10 +6,12 @@ var Omnibus = require('../src/Omnibus'),
     assert = require('assert'),
     _ = require('underscore');
 
-var upward = _(5).times(function () {
+var SIZE = 6;
+
+var upward = _(SIZE).times(function () {
     return ['UP', 'OPEN', 'CLOSE'];
 });
-var downward = _(5).times(function () {
+var downward = _(SIZE).times(function () {
     return ['DOWN', 'OPEN', 'CLOSE'];
 });
 
@@ -33,10 +35,10 @@ function appendCommands(batch) {
 function createBatch() {
     var result = {
         'peut etre instancié': {
-            topic: new Omnibus(5),
-            ' le cycle est de 5x2x3 étapes': function (o) {
+            topic: new Omnibus(SIZE),
+            ' le cycle est de 6x2x3 étapes': function (o) {
                 //console.log(o.cycle);
-                assert.equal(o.cycle.length, 5 * 2 * 3);
+                assert.equal(o.cycle.length, SIZE * 2 * 3);
             },
             ' l\'objet contient les méthodes requises': function (o) {
                 assert.ok(o.nextCommand);

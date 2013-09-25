@@ -30,7 +30,7 @@ var server = http.createServer(function (req, res) {
     var client = forwarded || req.connection.remoteAddress;
     if (!users[client]) {
         console.log('new elevator for "%s".', client);
-        users[client] = commands(elevator(5));
+        users[client] = commands(elevator(6));
     }
     var ctrl = users[client];
     var u = url.parse(req.url, true);

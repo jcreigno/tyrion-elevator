@@ -8,8 +8,8 @@ var vows = require('vows'),
 
 var server = require('../src/index');
 
-var events = ['/call?atFloor=[0-5]&to=[UP|DOWN]',
-              '/go?floorToGo=[0-5]',
+var events = ['/call?atFloor=5&to=DOWN',
+              '/go?floorToGo=2',
               '/userHasEntered',
               '/userHasExited',
               '/reset?cause=information+message'];

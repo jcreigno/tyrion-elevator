@@ -64,7 +64,6 @@ SmartOmnibus.prototype.nextCommand = function () {
 SmartOmnibus.prototype.call = function (atFloor, to) {
     console.log('call at floor %d to %s', atFloor, to);
     this.status[+atFloor].OUT[to]++;
-    console.log(this.status[+atFloor]);
 };
 
 SmartOmnibus.prototype.go = function (floorToGo) {

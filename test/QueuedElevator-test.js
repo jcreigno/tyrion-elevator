@@ -6,10 +6,12 @@ var QueuedElevator = require('../src/QueuedElevator'),
     assert = require('assert'),
     _ = require('underscore');
 
+var SIZE = 6;
+
 function createBatch() {
     var result = {
         'peut etre instancié': {
-            topic: new QueuedElevator(5),
+            topic: new QueuedElevator(SIZE),
             ' l\'objet contient les méthodes requises': function (o) {
                 assert.ok(o.nextCommand);
                 assert.ok(o.userHasEntered);
@@ -46,7 +48,7 @@ function createBatch() {
 function createBatch2() {
     var result = {
         'peut etre instancié': {
-            topic: new QueuedElevator(5),
+            topic: new QueuedElevator(SIZE),
             'un usager veux aller au 2ème étage': {
                 topic: function (o) {
                     o.go(2);
