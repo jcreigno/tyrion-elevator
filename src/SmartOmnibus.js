@@ -16,10 +16,10 @@ State.prototype.reset = function () {
 
 function SmartOmnibus(size) {
     this.size = size;
-    var upward = _(size).times(function () {
+    var upward = _(size - 1).times(function () {
         return 'UP';
     });
-    var downward = _(size).times(function () {
+    var downward = _(size - 1).times(function () {
         return 'DOWN';
     });
     this.cycle = upward.concat(downward);
