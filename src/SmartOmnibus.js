@@ -11,8 +11,7 @@ function State() {
 }
 
 State.prototype.reset = function (way) {
-    this.IN = 0;
-    this.OUT[way] = 0;
+    State.bind(this)();
 };
 
 function SmartOmnibus(size) {
@@ -31,9 +30,6 @@ SmartOmnibus.prototype.statusAtfloor = function () {
 
 SmartOmnibus.prototype.requestedAtFloor = function (way) {
     var s = this.statusAtfloor();
-    if (way) {
-        return s.OUT[way] || s.IN;
-    }
     return s.OUT.UP || s.OUT.DOWN || s.IN;
 };
 
