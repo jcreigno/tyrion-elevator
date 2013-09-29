@@ -3,7 +3,7 @@
 
 var http = require('http'), url = require('url');
 
-var elevator = require('./Omnibus');
+var elevator = require('./SmartOmnibus');
 
 
 function commands(el) {
