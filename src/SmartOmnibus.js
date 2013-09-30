@@ -14,13 +14,12 @@ State.prototype.reset = function () {
     State.bind(this)();
 };
 
-State.prototype.weight = function (way) {
-    return way ? this.OUT[way] + this.IN :
-            this.OUT.UP + this.OUT.DOWN + this.IN;
+State.prototype.weight = function () {
+    return this.OUT.UP + this.OUT.DOWN + this.IN;
 };
 
-State.prototype.isRequested = function (way) {
-    return this.weight(way) > 0;
+State.prototype.isRequested = function () {
+    return this.weight() > 0;
 };
 
 function SmartOmnibus(size) {
@@ -31,15 +30,14 @@ function SmartOmnibus(size) {
     });
     this.inUsers = 0;
     this.current = 0;
-    this.previousMove = 0;
 }
 
 SmartOmnibus.prototype.statusAtfloor = function () {
     return this.status[this.current];
 };
 
-SmartOmnibus.prototype.requestedAtFloor = function (way) {
-    return this.statusAtfloor().isRequested(way);
+SmartOmnibus.prototype.requestedAtFloor = function () {
+    return this.statusAtfloor().isRequested();
 };
 
 SmartOmnibus.prototype.moveTo = function (floorNumber) {
@@ -48,15 +46,10 @@ SmartOmnibus.prototype.moveTo = function (floorNumber) {
         return [];
     }
     var nb = floorNumber - this.current;
-    this.previousMove = nb;
     return _.times(Math.abs(nb), function () {
         return (nb < 0) ? 'DOWN' : 'UP';
     });
 };
-
-function sign(x) {
-    return x > 0 ? 1 : x < 0 ? -1 : 0;
-}
 
 SmartOmnibus.prototype.updateQueue = function () {
     var self = this;
@@ -73,18 +66,6 @@ SmartOmnibus.prototype.updateQueue = function () {
         });
         if (maxWeight === 0) {
             return self.queue;
-        }
-        var move = floorIs - this.current;
-        if (this.previousMove * move < 0) { //changing way
-            console.log('changing way going %s', sign(this.previousMove) > 0 ? 'DOWN' : 'UP');
-            var matchingFloor = this.current + sign(this.previousMove);
-            if (matchingFloor < this.size
-                        && matchingFloor >= 0
-                        && this.status[matchingFloor].isRequested()) {
-                console.log('lets go %d before going to %d.', matchingFloor, floorIs);
-                // next floor is requested let go there before changing way
-                floorIs = matchingFloor;
-            }
         }
         console.log('current floor is %d, going to floor %d', this.current, floorIs);
         this.queue = this.moveTo(floorIs);
@@ -112,7 +93,7 @@ SmartOmnibus.prototype.nextCommand = function () {
                 this.queue.unshift(next);
             }
             this.queue.unshift('CLOSE');
-            this.statusAtfloor().reset(next);
+            this.statusAtfloor().reset();
             next = 'OPEN';
         }
     }
