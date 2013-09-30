@@ -77,8 +77,8 @@ SmartOmnibus.prototype.nextCommand = function () {
     //console.log('current floor is %d', this.current);
     var next = this.updateQueue().shift();
     if (!next) {
-        this.queue.unshift('CLOSE');
-        next = 'OPEN';
+        //this.queue.unshift('CLOSE');
+        next = 'NOTHING';
     } else if (next !== 'CLOSE') {
         if (this.requestedAtFloor(next)) {
             this.queue = ['CLOSE', next].concat(this.queue);
