@@ -10,8 +10,17 @@ function State() {
     };
 }
 
-State.prototype.reset = function (way) {
+State.prototype.reset = function () {
     State.bind(this)();
+};
+
+State.prototype.weight = function (way) {
+    return way ? this.OUT[way] + this.IN :
+            this.OUT.UP + this.OUT.DOWN + this.IN;
+};
+
+State.prototype.isRequested = function (way) {
+    return this.weight(way) > 0;
 };
 
 function SmartOmnibus(size) {
@@ -22,6 +31,7 @@ function SmartOmnibus(size) {
     });
     this.inUsers = 0;
     this.current = 0;
+    this.previousMove = 0;
 }
 
 SmartOmnibus.prototype.statusAtfloor = function () {
@@ -29,8 +39,7 @@ SmartOmnibus.prototype.statusAtfloor = function () {
 };
 
 SmartOmnibus.prototype.requestedAtFloor = function (way) {
-    var s = this.statusAtfloor();
-    return s.OUT.UP || s.OUT.DOWN || s.IN;
+    return this.statusAtfloor().isRequested(way);
 };
 
 SmartOmnibus.prototype.moveTo = function (floorNumber) {
@@ -39,10 +48,15 @@ SmartOmnibus.prototype.moveTo = function (floorNumber) {
         return [];
     }
     var nb = floorNumber - this.current;
+    this.previousMove = nb;
     return _.times(Math.abs(nb), function () {
         return (nb < 0) ? 'DOWN' : 'UP';
     });
 };
+
+function sign(x) {
+    return x > 0 ? 1 : x < 0 ? -1 : 0;
+}
 
 SmartOmnibus.prototype.updateQueue = function () {
     var self = this;
@@ -51,12 +65,28 @@ SmartOmnibus.prototype.updateQueue = function () {
         var floorIs;
         
         self.status.forEach(function (s, index) {
-            var weight = s.OUT.UP + s.OUT.DOWN + s.IN;
+            var weight = s.weight();
             if (weight > maxWeight && self.current !== index) {
                 maxWeight = weight;
                 floorIs = index;
             }
         });
+        if (maxWeight === 0) {
+            return self.queue;
+        }
+        var move = floorIs - this.current;
+        if (this.previousMove * move < 0) { //changing way
+            console.log('changing way going %s', sign(this.previousMove) > 0 ? 'DOWN' : 'UP');
+            var matchingFloor = this.current + sign(this.previousMove);
+            if (matchingFloor < this.size
+                        && matchingFloor >= 0
+                        && this.status[matchingFloor].isRequested()) {
+                console.log('lets go %d before going to %d.', matchingFloor, floorIs);
+                // next floor is requested let go there before changing way
+                floorIs = matchingFloor;
+            }
+        }
+        console.log('current floor is %d, going to floor %d', this.current, floorIs);
         this.queue = this.moveTo(floorIs);
     }
     
@@ -76,18 +106,17 @@ SmartOmnibus.prototype.updateStatus = function (next) {
 SmartOmnibus.prototype.nextCommand = function () {
     //console.log('current floor is %d', this.current);
     var next = this.updateQueue().shift();
-    if (!next) {
-        //this.queue.unshift('CLOSE');
-        next = 'NOTHING';
-    } else if (next !== 'CLOSE') {
-        if (this.requestedAtFloor(next)) {
-            this.queue = ['CLOSE', next].concat(this.queue);
+    if (next !== 'CLOSE') {
+        if (this.requestedAtFloor()) {
+            if (next) {
+                this.queue.unshift(next);
+            }
+            this.queue.unshift('CLOSE');
             this.statusAtfloor().reset(next);
             next = 'OPEN';
         }
     }
-    
-    return this.updateStatus(next);
+    return this.updateStatus(next || 'NOTHING');
 };
 
 SmartOmnibus.prototype.call = function (atFloor, to) {
