@@ -15,7 +15,8 @@ State.prototype.reset = function () {
 };
 
 State.prototype.weight = function (way) {
-    return this.OUT[way] + this.IN;
+    return way ? this.OUT[way] + this.IN :
+            this.OUT.DOWN + this.OUT.UP + this.IN;
 };
 
 State.prototype.isRequested = function (way) {
@@ -33,6 +34,28 @@ function SmartOmnibus(size) {
     this.going = 'UP';
 }
 
+var WAYS = {
+    'UP' : function () {
+        var i;
+        for (i = this.current + 1; i < this.size; i++) {
+            if (this.status[i].isRequested()) {
+                return true;
+            }
+        }
+        return false;
+    },
+    'DOWN' : function () {
+        var i;
+        for (i = this.current - 1; i >= 0; i--) {
+            if (this.status[i].isRequested()) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+
 SmartOmnibus.prototype.statusAtfloor = function () {
     return this.status[this.current];
 };
@@ -41,25 +64,23 @@ SmartOmnibus.prototype.requestedAtFloor = function (way) {
     return this.statusAtfloor().isRequested(way);
 };
 
+SmartOmnibus.prototype.switchWay = function () {
+    this.going = this.going === 'UP' ? 'DOWN' : 'UP';
+    console.log('going %s', this.going);
+};
+
 SmartOmnibus.prototype.updateQueue = function () {
     if (this.queue.length > 0) {
         return this.queue;
     }
-    var i, requested = false;
-    if (this.going === 'UP') {
-        for (i = this.current; i < this.size - 1; i++) {
-            requested |= this.status[i].isRequested('UP');
-        }
-    } else {
-        for (i = this.current; i > 0; i--) {
-            requested |= this.status[i].isRequested('DOWN');
-        }
-    }
+    var requested = WAYS[this.going].bind(this)();
     if (!requested) { //let's change way
-        this.going = this.going === 'UP' ? 'DOWN' : 'UP';
-        console.log('going %s', this.going);
+        this.switchWay();
+        requested = WAYS[this.going].bind(this)();
     }
-    this.queue.push(this.going);
+    if (requested) {
+        this.queue.push(this.going);
+    }
     return this.queue;
 };
 
@@ -67,8 +88,14 @@ SmartOmnibus.prototype.updateStatus = function (next) {
     console.log('next is %s', next);
     if (next === 'UP') {
         this.current++;
+        if (this.current === this.size - 1) {
+            this.switchWay();
+        }
     } else if (next === 'DOWN') {
         this.current--;
+        if (this.current === 0) {
+            this.switchWay();
+        }
     }
     return next;
 };
