@@ -64,9 +64,6 @@ SmartOmnibus.prototype.updateQueue = function () {
                 floorIs = index;
             }
         });
-        if (maxWeight === 0) {
-            return self.queue;
-        }
         console.log('current floor is %d, going to floor %d', this.current, floorIs);
         this.queue = this.moveTo(floorIs);
     }
