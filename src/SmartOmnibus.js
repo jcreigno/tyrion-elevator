@@ -14,64 +14,53 @@ State.prototype.reset = function () {
     State.bind(this)();
 };
 
-State.prototype.weight = function () {
-    return this.OUT.UP + this.OUT.DOWN + this.IN;
+State.prototype.weight = function (way) {
+    return this.OUT[way] + this.IN;
 };
 
-State.prototype.isRequested = function () {
-    return this.weight() > 0;
+State.prototype.isRequested = function (way) {
+    return this.weight(way) > 0;
 };
 
 function SmartOmnibus(size) {
     this.size = size;
-    this.queue = [];
     this.status = _(size).times(function () {
         return new State();
     });
+    this.queue = [];
     this.inUsers = 0;
     this.current = 0;
+    this.going = 'UP';
 }
 
 SmartOmnibus.prototype.statusAtfloor = function () {
     return this.status[this.current];
 };
 
-SmartOmnibus.prototype.requestedAtFloor = function () {
-    return this.statusAtfloor().isRequested();
-};
-
-SmartOmnibus.prototype.moveTo = function (floorNumber) {
-    //console.log('move %d', floorNumber);
-    if (floorNumber === this.current) {
-        return [];
-    }
-    var nb = floorNumber - this.current;
-    return _.times(Math.abs(nb), function () {
-        return (nb < 0) ? 'DOWN' : 'UP';
-    });
+SmartOmnibus.prototype.requestedAtFloor = function (way) {
+    return this.statusAtfloor().isRequested(way);
 };
 
 SmartOmnibus.prototype.updateQueue = function () {
-    var self = this;
-    if (self.queue.length === 0) {
-        var maxWeight = -1;
-        var floorIs;
-        
-        self.status.forEach(function (s, index) {
-            var weight = s.weight();
-            if (weight > maxWeight && self.current !== index) {
-                maxWeight = weight;
-                floorIs = index;
-            }
-        });
-        if (maxWeight === 0) {
-            return self.queue;
-        }
-        console.log('current floor is %d, going to floor %d', this.current, floorIs);
-        this.queue = this.moveTo(floorIs);
+    if (this.queue.length > 0) {
+        return this.queue;
     }
-    
-    return self.queue;
+    var i, requested = false;
+    if (this.going === 'UP') {
+        for (i = this.current; i < this.size - 1; i++) {
+            requested |= this.status[i].isRequested('UP');
+        }
+    } else {
+        for (i = this.current; i > 0; i--) {
+            requested |= this.status[i].isRequested('DOWN');
+        }
+    }
+    if (!requested) { //let's change way
+        this.going = this.going === 'UP' ? 'DOWN' : 'UP';
+        console.log('going %s', this.going);
+    }
+    this.queue.push(this.going);
+    return this.queue;
 };
 
 SmartOmnibus.prototype.updateStatus = function (next) {
@@ -85,10 +74,9 @@ SmartOmnibus.prototype.updateStatus = function (next) {
 };
 
 SmartOmnibus.prototype.nextCommand = function () {
-    //console.log('current floor is %d', this.current);
     var next = this.updateQueue().shift();
     if (next !== 'CLOSE') {
-        if (this.requestedAtFloor()) {
+        if (this.requestedAtFloor(this.going)) {
             if (next) {
                 this.queue.unshift(next);
             }
