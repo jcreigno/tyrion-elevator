@@ -61,6 +61,9 @@ SmartOmnibus.prototype.statusAtfloor = function () {
 };
 
 SmartOmnibus.prototype.requestedAtFloor = function (way) {
+    if (this.current === 0 || this.current === this.size - 1) {
+        return this.statusAtfloor().isRequested();
+    }
     return this.statusAtfloor().isRequested(way);
 };
 
