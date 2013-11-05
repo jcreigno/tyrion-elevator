@@ -140,10 +140,11 @@ SmartOmnibus.prototype.userHasExited = function () {
     this.inUsers--;
 };
 
-SmartOmnibus.prototype.reset = function (cause) {
-    console.log('reset : %s', cause);
+SmartOmnibus.prototype.reset = function (lowerFloor, higherFloor, cause) {
+    console.log('lower : %d, higher : %d, reset : %s',lowerFloor, higherFloor, cause);
     console.log('current state was %s', JSON.stringify(this));
-    SmartOmnibus.bind(this)(this.size);
+    
+    SmartOmnibus.bind(this)(higherFloor - lowerFloor);
 };
 
 module.exports = function (size) {

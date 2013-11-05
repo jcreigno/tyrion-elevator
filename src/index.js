@@ -18,7 +18,7 @@ function commands(el) {
         'userHasEntered': el.userHasEntered.bind(el),
         'userHasExited': el.userHasExited.bind(el),
         'reset': function (query) {
-            return el.reset(query.cause);
+            return el.reset(query.lowerFloor, query.higherFloor, query.cause);
         }
     };
 }
@@ -30,7 +30,7 @@ var server = http.createServer(function (req, res) {
     var client = forwarded || req.connection.remoteAddress;
     if (!users[client]) {
         console.log('new elevator for "%s".', client);
-        users[client] = commands(elevator(6));
+        users[client] = commands(elevator(19));
     }
     var ctrl = users[client];
     var u = url.parse(req.url, true);
